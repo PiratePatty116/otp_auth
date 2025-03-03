@@ -42,6 +42,7 @@ dependencies:
   twilio_flutter: ^0.0.9
   pin_code_fields: ^7.4.0
   google_fonts: ^4.0.4
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -95,3 +96,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "/home/piratepatty/flutter/otp_auth/android/app/src/main/FInanceGPT.png"
