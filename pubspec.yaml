@@ -41,6 +41,7 @@ dependencies:
   firebase_auth: ^4.16.0
   twilio_flutter: ^0.0.9
   pin_code_fields: ^7.4.0
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:
