@@ -125,9 +125,9 @@ class _AuthPageState extends State<AuthPage>
   bool _confirmPasswordVisible = false;
 
   // Twilio credentials
-  final String _twilioSid = 'ENTER_SID';
-  final String _twilioAuth = 'ENTER_AUTH';
-  final String _twilioPhone = 'ENTER_PHONE';
+  final String _twilioSid = 'ENTER_YOUR_SID';
+  final String _twilioAuth = 'ENTER_YOUR_AUTH';
+  final String _twilioPhone = 'ENTER_PHONE_NUMBER';
 
   @override
   void initState() {
@@ -283,6 +283,15 @@ class _AuthPageState extends State<AuthPage>
             label: 'Confirm Password',
             icon: Icons.lock_outline,
             obscureText: true,
+          ),
+        if (!isLogin && !_otpSent)
+          _buildInputField(
+            controller: _phoneController,
+            label: 'Phone Number',
+            icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+            helperText:
+                'Enter your phone number with country code (e.g., +1234567890)',
           ),
         if (_otpSent)
           _buildInputField(
