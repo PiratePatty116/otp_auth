@@ -125,9 +125,27 @@ class _AuthPageState extends State<AuthPage>
   bool _confirmPasswordVisible = false;
 
   // Twilio credentials
-  final String _twilioSid = 'ENTER_YOUR_SID';
-  final String _twilioAuth = 'ENTER_YOUR_AUTH';
+  final String _twilioSid = 'ENTER_SID';
+  final String _twilioAuth = 'ENTER_AUTH';
   final String _twilioPhone = 'ENTER_PHONE_NUMBER';
+
+  //country codes
+  final List<Map<String, String>> _countryCodes = [
+    {'code': '+91', 'country': 'India'},
+    {'code': '+1', 'country': 'USA'},
+    {'code': '+44', 'country': 'UK'},
+    {'code': '+61', 'country': 'Australia'},
+    {'code': '+86', 'country': 'China'},
+    {'code': '+49', 'country': 'Germany'},
+    {'code': '+81', 'country': 'Japan'},
+    {'code': '+33', 'country': 'France'},
+    {'code': '+7', 'country': 'Russia'},
+    {'code': '+55', 'country': 'Brazil'},
+    // Add more country codes as needed
+  ];
+
+// Add this variable to track the selected country code
+  String _selectedCountryCode = '+91'; // Default to India's code
 
   @override
   void initState() {
@@ -257,6 +275,69 @@ class _AuthPageState extends State<AuthPage>
     );
   }
 
+  Widget _buildPhoneInputField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Country code dropdown
+          Container(
+            width: 100,
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedCountryCode,
+                icon: const Icon(Icons.arrow_drop_down,
+                    color: AppColors.textLight),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                borderRadius: BorderRadius.circular(12),
+                isExpanded: true,
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedCountryCode = newValue;
+                    });
+                  }
+                },
+                items: _countryCodes.map<DropdownMenuItem<String>>(
+                    (Map<String, String> country) {
+                  return DropdownMenuItem<String>(
+                    value: country['code'],
+                    child: Text(
+                      "${country['code']} ${country['country']}",
+                      style: const TextStyle(fontSize: 14),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          // Phone number input field (without country code)
+          Expanded(
+            child: TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                prefixIcon:
+                    Icon(Icons.phone_outlined, color: AppColors.textLight),
+                helperText: 'Enter your phone number without country code',
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFormFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,15 +365,8 @@ class _AuthPageState extends State<AuthPage>
             icon: Icons.lock_outline,
             obscureText: true,
           ),
-        if (!isLogin && !_otpSent)
-          _buildInputField(
-            controller: _phoneController,
-            label: 'Phone Number',
-            icon: Icons.phone_outlined,
-            keyboardType: TextInputType.phone,
-            helperText:
-                'Enter your phone number with country code (e.g., +1234567890)',
-          ),
+        // Replace the phone input field with our new custom widget
+        if (!isLogin && !_otpSent) _buildPhoneInputField(),
         if (_otpSent)
           _buildInputField(
             controller: _otpController,
@@ -415,8 +489,11 @@ class _AuthPageState extends State<AuthPage>
     setState(() => _isLoading = true);
 
     try {
+      // Concatenate the selected country code with the phone number
+      final completePhoneNumber = _selectedCountryCode + _phoneController.text;
+
       // Send OTP via Twilio
-      await _sendTwilioOtp(_phoneController.text);
+      await _sendTwilioOtp(completePhoneNumber);
 
       setState(() {
         _isLoading = false;
@@ -439,10 +516,14 @@ class _AuthPageState extends State<AuthPage>
         password: _passwordController.text,
       );
 
-      // Save phone number to shared preferences
+      // Save phone number with country code to shared preferences
       final prefs = await SharedPreferences.getInstance();
+      final completePhoneNumber = _selectedCountryCode + _phoneController.text;
       await prefs.setString(
-          'phone_${_emailController.text}', _phoneController.text);
+          'phone_${_emailController.text}', completePhoneNumber);
+      // Save country code separately for future use
+      await prefs.setString(
+          'country_code_${_emailController.text}', _selectedCountryCode);
 
       // Send email verification
       await _tempUserCredential!.user!.sendEmailVerification();
@@ -479,9 +560,12 @@ class _AuthPageState extends State<AuthPage>
         return;
       }
 
-      // Get stored phone number
+      // Get stored phone number and country code
       final prefs = await SharedPreferences.getInstance();
       final storedPhone = prefs.getString('phone_${_emailController.text}');
+      // ignore: unused_local_variable
+      final storedCountryCode =
+          prefs.getString('country_code_${_emailController.text}') ?? '+91';
 
       if (storedPhone == null) {
         setState(() => _isLoading = false);
@@ -489,9 +573,6 @@ class _AuthPageState extends State<AuthPage>
         await _auth.signOut();
         return;
       }
-
-      // Set phone controller with the stored phone
-      _phoneController.text = storedPhone;
 
       // Send OTP via Twilio
       await _sendTwilioOtp(storedPhone);
