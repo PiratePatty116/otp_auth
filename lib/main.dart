@@ -125,9 +125,9 @@ class _AuthPageState extends State<AuthPage>
   bool _confirmPasswordVisible = false;
 
   // Twilio credentials
-  final String _twilioSid = 'AC653c1dfab3e4da029cf0980dc860b22f';
-  final String _twilioAuth = '6f430ea3a604aed7459b8a46761b5ffe';
-  final String _twilioPhone = '+18578475007';
+  final String _twilioSid = 'ENTER_SID';
+  final String _twilioAuth = 'ENTER_AUTH';
+  final String _twilioPhone = 'ENTER_PHONE_NUMBER';
 
   //country codes
   final List<Map<String, String>> _countryCodes = [
