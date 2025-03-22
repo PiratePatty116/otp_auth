@@ -43,6 +43,7 @@ dependencies:
   pin_code_fields: ^7.4.0
   google_fonts: ^4.0.4
   flutter_launcher_icons: ^0.13.1
+  file_picker: ^8.0.0+1
 
 dev_dependencies:
   flutter_test:

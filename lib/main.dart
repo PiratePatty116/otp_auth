@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:otp_auth/auth_page.dart';
+import 'package:otp_auth/screens/auth_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

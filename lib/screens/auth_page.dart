@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:otp_auth/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:otp_auth/home_screen.dart';
+import 'package:otp_auth/screens/home_screen.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
